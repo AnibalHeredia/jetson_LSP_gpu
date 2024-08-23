@@ -4,7 +4,7 @@ from keras.models import load_model
 from func import *
 from constants import *
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-
+#falta arreglar
 
 def interpolate_keypoints(keypoints, target_length=15):
     current_length = len(keypoints)
