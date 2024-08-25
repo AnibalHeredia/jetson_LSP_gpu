@@ -33,7 +33,7 @@ FONT_SIZE = 1.5
 FONT_POS = (5, 30)
 
 words_text = {
-    "adios": "ADIÓS",
+    "adios": "ADIOS",
     "bien": "BIEN",
     "buenas_noches": "BUENAS NOCHES",
     "buenas_tardes": "BUENAS TARDES",

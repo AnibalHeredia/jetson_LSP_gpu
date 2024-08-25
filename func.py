@@ -68,7 +68,13 @@ def extract_keypoints(pose_results, hands_results):
     hand_info_map = {} 
     lh = np.zeros(21*3)
     rh = np.zeros(21*3)
-    pose = np.array([[landmark.x, landmark.y, landmark.z, landmark.visibility]  for landmark in (pose_results.pose_landmarks[0] if pose_results.pose_landmarks else [])]).flatten() if pose_results else np.zeros(33*4)
+    pose= np.zeros(33*4)
+    
+    #pose = np.array([[landmark.x, landmark.y, landmark.z, landmark.visibility]  for landmark in (pose_results.pose_landmarks[0] if pose_results.pose_landmarks else [])]).flatten() if pose_results else np.zeros(33*4)
+    
+    if pose_results and pose_results.pose_landmarks:
+        pose = np.array([[landmark.x, landmark.y, landmark.z, landmark.visibility] for landmark in (pose_results.pose_landmarks[0])]).flatten()
+    
     if hands_results and hands_results.handedness:
         for i, hand_info_list in enumerate(hands_results.handedness):
             if hand_info_list:
@@ -86,7 +92,14 @@ def extract_keypoints(pose_results, hands_results):
                 elif label == 'right':
                     rh = keypoints
     # 21*3*2 + 33*4 = 258 keypoints
-    return np.concatenate([pose, lh, rh])
+    keypoints = np.concatenate([pose, lh, rh])
+
+    # Verificación de longitud
+    if len(keypoints) != 258:
+        print(f"Error: La cantidad de keypoints detectados es {len(keypoints)}, debería ser 258.")
+        return np.zeros(258)
+    else:
+        return keypoints
 
 # MODEL
 base_options_pose = python.BaseOptions(model_asset_path=pose_model_path, delegate=delegate)
