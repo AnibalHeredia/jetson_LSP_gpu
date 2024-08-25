@@ -1,10 +1,14 @@
+import os
+os.environ['LD_PRELOAD'] = '/usr/lib/aarch64-linux-gnu/libgomp.so.1'
+print("LD_PRELOAD ha sido configurado correctamente.")
 import cv2
 import numpy as np
-from keras.models import load_model
+import mediapipe as mp
 from func import *
 from constants import *
+from keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-import mediapipe as mp
+
 
 def interpolate_keypoints(keypoints, target_length=15):
     current_length = len(keypoints)
