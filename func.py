@@ -13,9 +13,13 @@ from constants import *
 
 # Detectar el sistema operativo
 if platform.system() == 'Linux':
+    print("init Linux")
+    os.environ['LD_PRELOAD'] = '/usr/lib/aarch64-linux-gnu/libgomp.so.1'
+    print("LD_PRELOAD ha sido configurado correctamente.")
     delegate = python.BaseOptions.Delegate.GPU
     video_source = "/dev/video0"
 elif platform.system() == 'Windows':
+    print("init Windows")
     delegate = python.BaseOptions.Delegate.CPU
     video_source = 1
 else:
