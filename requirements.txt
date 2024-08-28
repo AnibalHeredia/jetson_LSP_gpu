@@ -1,0 +1,4 @@
+#tensorflow==2.4.1
+opencv-contrib-python==4.10.0.84 
+numpy==1.18.5   
+keras==2.4.3

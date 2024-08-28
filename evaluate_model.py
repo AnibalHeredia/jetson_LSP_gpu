@@ -1,5 +1,3 @@
-import cv2
-import numpy as np
 from func import *
 from constants import *
 from keras.models import load_model
