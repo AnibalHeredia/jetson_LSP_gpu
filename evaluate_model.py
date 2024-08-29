@@ -50,6 +50,9 @@ def evaluate_model(src=None, threshold=0.8, margin_frame=1, delay_frames=3):
         while video.isOpened():
             ret, frame = video.read()
             frame = cv2.flip(frame,1)
+            window_name ='Traductor LSP'
+            #cv2.namedWindow(window_name, cv2.WINDOW_GUI_EXPANDED)
+            #cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
             if not ret: 
                 print("Image capture failed.")
                 break
@@ -91,7 +94,7 @@ def evaluate_model(src=None, threshold=0.8, margin_frame=1, delay_frames=3):
                 cv2.rectangle(frame, (0, 0), (640, 35), (245, 117, 16), -1)
                 cv2.putText(frame, ' | '.join(sentence), FONT_POS, FONT, FONT_SIZE, (255, 255, 255))
                 annotated_image = draw_landmarks_on_image(frame, pose_result, hand_result)
-                cv2.imshow('Traductor LSP', annotated_image)
+                cv2.imshow(window_name, annotated_image)
                 if cv2.waitKey(10) & 0xFF == ord('q'):
                     break
                     

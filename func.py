@@ -24,7 +24,20 @@ elif platform.system() == 'Windows':
 else:
     raise Exception("Sistema operativo no soportado")
 
+def set_fullscreen(window_name):
+    # Obtener el tamaño de la pantalla
+    screen_width = cv2.getWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN)
+    screen_height = cv2.getWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN)
+    
+    if screen_width == -1:
+        screen_width = 1920  # Ajusta al tamaño de pantalla deseado
+    if screen_height == -1:
+        screen_height = 1080  # Ajusta al tamaño de pantalla deseado
 
+    # Configurar la ventana a pantalla completa
+    cv2.namedWindow(window_name, cv2.WND_PROP_FULLSCREEN)
+    cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+                          
 # DRAW LANDMARKS
 def draw_landmarks_on_image(rgb_image, pose_result, hand_result):
     annotated_image = np.copy(rgb_image)

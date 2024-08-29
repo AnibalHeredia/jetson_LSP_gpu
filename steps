@@ -1,0 +1,46 @@
+/*********************************/
+  Instalar escritorio remoto Xrdp:
+/*********************************/
+sudo apt update
+//Escrito remoto
+sudo apt-get install tightvncserver xrdp
+sudo reboot
+sudo apt-get install xubuntu-desktop
+echo xfce4-session >~/.xsession
+sudo service xrdp restart
+sudo apt install vino
+mkdir -p ~/.config/autostart
+cp /usr/share/applications/vino-server.desktop ~/.config/autostart
+gsettings set org.gnome.Vino prompt-enabled false
+gsettings set org.gnome.Vino require-encryption false
+gsettings set org.gnome.Vino authentication-methods "['vnc']"
+gsettings set org.gnome.Vino vnc-password $(echo -n 'jetson'|base64)
+sudo reboot
+/*********************************/
+ Instalar visual studio code.deb
+/*********************************/
+sudo apt install gdebi
+gdebi-gtk
+abrir .deb
+instalar paquete
+---------------------------------------------
+/*********************************/
+ Archiconda config
+/*********************************/
+https://github.com/Archiconda/build-tools/releases/tag/0.2.3
+bash Archiconda3-0.2.3-Linux-aarch64.sh
+yes
+source ~/.bashrc
+cd
+conda activate 
+conda list
+conda create --name lsp python=3.7.1
+source activate lsp
+conda install python=3.8.10
+pip install --upgrade pip
+pip install opencv-contrib-python
+python3 -m pip install mediapipe-0.10.7-cp38-cp38-linux_aarch64.whl
+pip install tensorflow==2.10.1
+#pip3 install tflite-runtime
+ 
+
