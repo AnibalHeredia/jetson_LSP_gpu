@@ -1,7 +1,8 @@
+import cv2
+from keras.models import load_model
 from func import *
 from constants import *
-from keras.models import load_model
-from tensorflow.keras.preprocessing.sequence import pad_sequences
+#from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 
 def interpolate_keypoints(keypoints, target_length=15):
