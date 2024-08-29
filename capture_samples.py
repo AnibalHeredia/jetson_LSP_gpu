@@ -2,9 +2,10 @@ import os
 import cv2
 import numpy as np
 from mediapipe.python.solutions.holistic import Holistic
-from helpers import create_folder, draw_keypoints, mediapipe_detection, save_frames, there_hand
+from func import *
 from constants import FONT, FONT_POS, FONT_SIZE, FRAME_ACTIONS_PATH, ROOT_PATH
 from datetime import datetime
+
 
 def get_next_sample_number(path):
     existing_samples = [d for d in os.listdir(path) if os.path.isdir(os.path.join(path, d))]
@@ -42,8 +43,9 @@ def capture_samples(path, margin_frame=2, min_cant_frames=5, delay_frames=3):
     fix_frames = 0
     recording = False
     
-    with Holistic() as holistic_model:
-        video = cv2.VideoCapture(0)
+    with vision.PoseLandmarker.create_from_options(pose_options) as pose_model, \
+        vision.HandLandmarker.create_from_options(hand_options) as hand_model:
+        video = cv2.VideoCapture(video_source)
         
         while video.isOpened():
             ret, frame = video.read()
@@ -53,9 +55,9 @@ def capture_samples(path, margin_frame=2, min_cant_frames=5, delay_frames=3):
                 break
             
             image = frame.copy()
-            results = mediapipe_detection(frame, holistic_model)
+            pose_result, hand_result = mediapipe_detection(frame, pose_model, hand_model)
             
-            if there_hand(results) or recording:
+            if there_hand(hand_result) or recording:
                 recording = False
                 count_frame += 1
                 if count_frame > margin_frame:
@@ -79,8 +81,8 @@ def capture_samples(path, margin_frame=2, min_cant_frames=5, delay_frames=3):
                 frames, count_frame = [], 0
                 cv2.putText(image, 'Listo para capturar...', FONT_POS, FONT, FONT_SIZE, (0,220, 100))
             
-            draw_keypoints(image, results)
-            cv2.imshow(f'Toma de muestras para "{os.path.basename(path)}"', image)
+            annotated_image = draw_landmarks_on_image(image, pose_result, hand_result)
+            cv2.imshow(f'Toma de muestras para "{os.path.basename(path)}"', annotated_image)
             if cv2.waitKey(10) & 0xFF == ord('q'):
                 break
 

@@ -207,3 +207,8 @@ def get_sequences_and_labels(words_id):
 
 def there_hand(results: NamedTuple) -> bool:
     return results.hand_landmarks
+
+def save_frames(frames, output_folder):
+    for num_frame, frame in enumerate(frames):
+        frame_path = os.path.join(output_folder, f"{num_frame + 1}.jpg")
+        cv2.imwrite(frame_path, cv2.cvtColor(frame, cv2.COLOR_BGR2BGRA))

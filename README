@@ -11,9 +11,10 @@ https://docs.nvidia.com/deeplearning/frameworks/install-tf-jetson-platform/index
 STEPS
 ************
 python3 -m pip install mediapipe-0.10.7-cp38-cp38-linux_aarch64.whl
+pip install keras
+
 mediapipe==0.10.7
 sudo apt install python3.8-venv
-
 python3 -m venv env
 source env/bin/activate
 
