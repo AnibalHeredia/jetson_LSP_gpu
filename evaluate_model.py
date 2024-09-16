@@ -49,7 +49,7 @@ def evaluate_model(src=None, threshold=0.8, margin_frame=1, delay_frames=3):
         
         while video.isOpened():
             ret, frame = video.read()
-            frame = cv2.flip(frame,1)
+            #frame = cv2.flip(frame,1)
             window_name ='Traductor LSP'
             #cv2.namedWindow(window_name, cv2.WINDOW_GUI_EXPANDED)
             #cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)

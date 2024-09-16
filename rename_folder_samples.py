@@ -16,7 +16,7 @@ def rename_folders(path):
     
     # Renombrar las carpetas secuencialmente
     for index, folder in enumerate(date_folders, start=1):
-        new_folder_name = f"sample_{str(index).zfill(2)}"
+        new_folder_name = f"sample{str(index).zfill(2)}"
         old_folder_path = os.path.join(path, folder)
         new_folder_path = os.path.join(path, new_folder_name)
         
