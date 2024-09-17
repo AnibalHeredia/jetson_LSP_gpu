@@ -4,36 +4,15 @@ from func import *
 from constants import *
 #from tensorflow.keras.preprocessing.sequence import pad_sequences
 
-
-def interpolate_keypoints(keypoints, target_length=15):
-    current_length = len(keypoints)
-    if current_length == target_length:
-        return keypoints
-    
-    indices = np.linspace(0, current_length - 1, target_length)
-    interpolated_keypoints = []
-    for i in indices:
-        lower_idx = int(np.floor(i))
-        upper_idx = int(np.ceil(i))
-        weight = i - lower_idx
-        if lower_idx == upper_idx:
-            interpolated_keypoints.append(keypoints[lower_idx])
-        else:
-            interpolated_point = (1 - weight) * np.array(keypoints[lower_idx]) + weight * np.array(keypoints[upper_idx])
-            interpolated_keypoints.append(interpolated_point.tolist())
-    
-    return interpolated_keypoints
-
-def normalize_keypoints(keypoints, target_length=15):
-    current_length = len(keypoints)
-    if current_length < target_length:
-        return interpolate_keypoints(keypoints, target_length)
-    elif current_length > target_length:
-        step = current_length / target_length
-        indices = np.arange(0, current_length, step).astype(int)[:target_length]
-        return [keypoints[i] for i in indices]
+def normalize_keypoints(keypoints, target_keypoints=15):
+    num_keypoints = len(keypoints)
+    if  num_keypoints != target_keypoints:
+        indices = np.linspace(0, num_keypoints - 1, target_keypoints, dtype=int)
+        adjusted_keypoints = [keypoints[int(i)] for i in indices]
     else:
-        return keypoints
+        adjusted_keypoints = keypoints
+
+    return adjusted_keypoints
     
 def evaluate_model(src=None, threshold=0.8, margin_frame=1, delay_frames=3):
     kp_seq, sentence = [], []
@@ -49,7 +28,7 @@ def evaluate_model(src=None, threshold=0.8, margin_frame=1, delay_frames=3):
         
         while video.isOpened():
             ret, frame = video.read()
-            #frame = cv2.flip(frame,1)
+            frame = cv2.flip(frame,1)
             window_name ='Traductor LSP'
             #cv2.namedWindow(window_name, cv2.WINDOW_GUI_EXPANDED)
             #cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)

@@ -1,3 +1,86 @@
+def interpolate_keypoints(keypoints, target_length=15):
+    current_length = len(keypoints)
+    if current_length == target_length:
+        return keypoints
+    
+    indices = np.linspace(0, current_length - 1, target_length)
+    interpolated_keypoints = []
+    for i in indices:
+        lower_idx = int(np.floor(i))
+        upper_idx = int(np.ceil(i))
+        weight = i - lower_idx
+        if lower_idx == upper_idx:
+            interpolated_keypoints.append(keypoints[lower_idx])
+        else:
+            interpolated_point = (1 - weight) * np.array(keypoints[lower_idx]) + weight * np.array(keypoints[upper_idx])
+            interpolated_keypoints.append(interpolated_point.tolist())
+    
+    return interpolated_keypoints
+
+def normalize_keypoints(keypoints, target_length=15):
+    current_length = len(keypoints)
+
+    if current_length < target_length:
+        return interpolate_keypoints(keypoints, target_length)
+    elif current_length > target_length:
+        step = current_length / target_length
+        indices = np.arange(0, current_length, step).astype(int)[:target_length]
+        return [keypoints[i] for i in indices]
+    else:
+        return keypoints
+
+
+def adjust_frames(frames, target_count=15):
+    num_frames = len(frames)
+    
+    if num_frames > target_count:
+        # Reducir el número de frames de manera uniforme
+        indices = np.linspace(0, num_frames - 1, target_count, dtype=int)
+        adjusted_frames = [frames[int(i)] for i in indices]
+        
+        # Asegurarse de que no haya frames repetidos debido a la selección de índices
+        unique_indices = np.unique(indices)
+        adjusted_frames = [frames[i] for i in unique_indices]
+        
+    elif num_frames < target_count:
+        # Si hay menos frames de los necesarios, copiar y distribuir
+        indices = np.linspace(0, num_frames - 1, target_count, dtype=int)
+        adjusted_frames = [frames[int(i)] for i in indices]
+        
+    else:
+        # Si ya tenemos el número correcto de frames, no hacer nada
+        adjusted_frames = frames
+
+    return adjusted_frames
+
+def interpolate_frames(frames, target_frame_count=15):
+    current_frame_count = len(frames)
+    if current_frame_count == target_frame_count:
+        return frames
+    
+    indices = np.linspace(0, current_frame_count - 1, target_frame_count)
+    interpolated_frames = []
+    for i in indices:
+        lower_idx = int(np.floor(i))
+        upper_idx = int(np.ceil(i))
+        weight = i - lower_idx
+        interpolated_frame = cv2.addWeighted(frames[lower_idx], 1 - weight, frames[upper_idx], weight, 0)
+        interpolated_frames.append(interpolated_frame)
+    
+    return interpolated_frames
+
+def normalize_frames(frames, target_frame_count=15):
+    current_frame_count = len(frames)
+    if current_frame_count < target_frame_count:
+        return interpolate_frames(frames, target_frame_count)
+    elif current_frame_count > target_frame_count:
+        step = current_frame_count / target_frame_count
+        indices = np.arange(0, current_frame_count, step).astype(int)[:target_frame_count]
+        return [frames[i] for i in indices]
+    else:
+        return frames
+
+
 # CREATE KEYPOINTS
 def extract_keypoints(pose_result, hand_result):
     pose = np.array([[landmark.x, landmark.y, landmark.z, landmark.visibility]  for landmark in (pose_result.pose_landmarks[0] if pose_result.pose_landmarks else [])]).flatten() if pose_result else np.zeros(33*4)

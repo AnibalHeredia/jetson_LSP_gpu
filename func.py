@@ -200,7 +200,7 @@ def get_keypoints(pose_model,hand_model, path):
         kp_frame = extract_keypoints(pose_result,hand_result)
         kp_seq = np.concatenate([kp_seq, [kp_frame]] if kp_seq.size > 0 else [[kp_frame]])
         #frame = draw_landmarks_on_image(frame, pose_result, hand_result)
-        display_keypoints_on_image(frame, kp_frame)
+        #display_keypoints_on_image(frame, kp_frame)
     
     return kp_seq
 

@@ -1,89 +1,54 @@
 import cv2
 import numpy as np
+import re
 import os
 import shutil
 from constants import *
 
-def adjust_frames(frames, target_count=15):
-    """
-    Ajusta la cantidad de frames a un número objetivo.
-    
-    Parameters:
-    - frames: List of lists, cada lista representa un frame con keypoints.
-    - target_count: Número deseado de frames.
-    
-    Returns:
-    - Una lista con el número ajustado de frames.
-    """
+def normalize_frames(frames, target_count=15):
     num_frames = len(frames)
     
-    if num_frames > target_count:
-        # Si hay más frames de los necesarios, reducir la cantidad
+    if  num_frames != target_count:
         indices = np.linspace(0, num_frames - 1, target_count, dtype=int)
-        adjusted_frames = [frames[i] for i in indices]
-    elif num_frames < target_count:
-        # Si hay menos frames de los necesarios, copiar y distribuir
-        indices = np.linspace(0, num_frames - 1, target_count)
         adjusted_frames = [frames[int(i)] for i in indices]
-        
-        # Interpolación de frames para asegurar el tamaño correcto
-        adjusted_frames = [np.interp(np.linspace(0, num_frames - 1, target_count), 
-                                    np.arange(num_frames), frame) for frame in np.array(adjusted_frames).T]
-        adjusted_frames = np.array(adjusted_frames).T.tolist()
     else:
-        # Si ya tenemos el número correcto de frames, no hacer nada
         adjusted_frames = frames
 
     return adjusted_frames
 
+def extract_number(filename):
+    """
+    Extrae el número del nombre del archivo.
+    """
+    match = re.search(r'(\d+)', filename)
+    return int(match.group(1)) if match else float('inf')
+
 
 def read_frames_from_directory(directory):
+    # Obtener todos los archivos de imágenes (.jpg) en el directorio
+    frame_files = [f for f in os.listdir(directory) if f.endswith('.jpg')]
+    
+    # Ordenar los archivos numéricamente
+    sorted_files = sorted(frame_files, key=extract_number)
     frames = []
-    for filename in sorted(os.listdir(directory)):
-        if filename.endswith('.jpg'):
-            frame = cv2.imread(os.path.join(directory, filename))
-            frames.append(frame)
+    
+    for filename in sorted_files:
+        frame = cv2.imread(os.path.join(directory, filename))
+        frames.append(frame)
     return frames
-
-def interpolate_frames(frames, target_frame_count=15):
-    current_frame_count = len(frames)
-    if current_frame_count == target_frame_count:
-        return frames
-    
-    indices = np.linspace(0, current_frame_count - 1, target_frame_count)
-    interpolated_frames = []
-    for i in indices:
-        lower_idx = int(np.floor(i))
-        upper_idx = int(np.ceil(i))
-        weight = i - lower_idx
-        interpolated_frame = cv2.addWeighted(frames[lower_idx], 1 - weight, frames[upper_idx], weight, 0)
-        interpolated_frames.append(interpolated_frame)
-    
-    return interpolated_frames
-
-def normalize_frames(frames, target_frame_count=15):
-    current_frame_count = len(frames)
-    if current_frame_count < target_frame_count:
-        return interpolate_frames(frames, target_frame_count)
-    elif current_frame_count > target_frame_count:
-        step = current_frame_count / target_frame_count
-        indices = np.arange(0, current_frame_count, step).astype(int)[:target_frame_count]
-        return [frames[i] for i in indices]
-    else:
-        return frames
 
 def process_directory(word_directory, target_frame_count=15):
     for sample_name in os.listdir(word_directory):
         sample_directory = os.path.join(word_directory, sample_name)
         if os.path.isdir(sample_directory):
             frames = read_frames_from_directory(sample_directory)
-            normalized_frames = adjust_frames(frames, target_frame_count)
+            normalized_frames = normalize_frames(frames, target_frame_count)
             clear_directory(sample_directory)
             save_normalized_frames(sample_directory, normalized_frames)
 
 def save_normalized_frames(directory, frames):
     for i, frame in enumerate(frames, start=1):
-        cv2.imwrite(os.path.join(directory, f'frame_{i:02}.jpg'), frame, [cv2.IMWRITE_JPEG_QUALITY, 50])
+        cv2.imwrite(os.path.join(directory, f'frame_{i:02}.jpg'), frame)
 
 def clear_directory(directory):
     for filename in os.listdir(directory):
@@ -106,8 +71,3 @@ if __name__ == "__main__":
             print(f'Normalizando frames para "{word_id}"...')
             process_directory(word_path, MODEL_FRAMES)
     
-    # sample_directory = r"E:\Data\LSP Project\RED NEURONAL\frame_actions\buenos_dias\sample_240113195007489206"
-    # frames = read_frames_from_directory(sample_directory)
-    # normalized_frames = normalize_frames(frames, 15)
-    # clear_directory(sample_directory)
-    # save_normalized_frames(sample_directory, normalized_frames)
