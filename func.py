@@ -151,6 +151,42 @@ def mediapipe_detection(image, pose_landmarker, hand_landmarker):
     
     return pose_result , hand_result
 
+# DIBUJAR LANDMARKS A PARTIR DE LOS KEYPOINTS EXTRAÍDOS
+def draw_keypoints_on_image(rgb_image, keypoints):
+    # Dividimos los keypoints en las partes correspondientes: pose, manos
+    pose_keypoints = keypoints[:33*4].reshape(33, 4)  # 33 puntos clave del cuerpo
+    left_hand_keypoints = keypoints[33*4:33*4+21*3].reshape(21, 3)  # 21 puntos clave de la mano izquierda
+    right_hand_keypoints = keypoints[33*4+21*3:33*4+2*21*3].reshape(21, 3)  # 21 puntos clave de la mano derecha
+    
+    # Crear copia de la imagen original
+    annotated_image = np.copy(rgb_image)
+    
+    # Dibujar keypoints del cuerpo (pose)
+    for i, kp in enumerate(pose_keypoints):
+        x, y, z, visibility = kp
+        if visibility > 0.5:  # Solo dibujar puntos visibles
+            cv2.circle(annotated_image, (int(x * annotated_image.shape[1]), int(y * annotated_image.shape[0])), 5, (0, 0, 255), -1)
+    
+    # Dibujar keypoints de la mano izquierda
+    for kp in left_hand_keypoints:
+        x, y, z = kp
+        cv2.circle(annotated_image, (int(x * annotated_image.shape[1]), int(y * annotated_image.shape[0])), 5, (255, 0, 0), -1)
+
+    # Dibujar keypoints de la mano derecha
+    for kp in right_hand_keypoints:
+        x, y, z = kp
+        cv2.circle(annotated_image, (int(x * annotated_image.shape[1]), int(y * annotated_image.shape[0])), 5, (0, 255, 0), -1)
+
+    return annotated_image
+
+# FUNCIÓN PARA MOSTRAR IMAGEN CON KEYPOINTS YA EXTRAÍDOS
+def display_keypoints_on_image(frame, keypoints):
+    frame = draw_keypoints_on_image(frame, keypoints)
+    window_name = 'Verificacion de Keypoints'
+    cv2.imshow(window_name, frame)
+    cv2.waitKey(500)
+    cv2.destroyAllWindows()
+
 
 def get_keypoints(pose_model,hand_model, path):
     #OBTENER KEYPOINTS DE LA MUESTRA
@@ -163,6 +199,9 @@ def get_keypoints(pose_model,hand_model, path):
         pose_result, hand_result = mediapipe_detection(frame, pose_model,hand_model)
         kp_frame = extract_keypoints(pose_result,hand_result)
         kp_seq = np.concatenate([kp_seq, [kp_frame]] if kp_seq.size > 0 else [[kp_frame]])
+        #frame = draw_landmarks_on_image(frame, pose_result, hand_result)
+        display_keypoints_on_image(frame, kp_frame)
+    
     return kp_seq
 
 def insert_keypoints_sequence(df, n_sample:int, kp_seq):

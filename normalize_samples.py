@@ -4,6 +4,39 @@ import os
 import shutil
 from constants import *
 
+def adjust_frames(frames, target_count=15):
+    """
+    Ajusta la cantidad de frames a un número objetivo.
+    
+    Parameters:
+    - frames: List of lists, cada lista representa un frame con keypoints.
+    - target_count: Número deseado de frames.
+    
+    Returns:
+    - Una lista con el número ajustado de frames.
+    """
+    num_frames = len(frames)
+    
+    if num_frames > target_count:
+        # Si hay más frames de los necesarios, reducir la cantidad
+        indices = np.linspace(0, num_frames - 1, target_count, dtype=int)
+        adjusted_frames = [frames[i] for i in indices]
+    elif num_frames < target_count:
+        # Si hay menos frames de los necesarios, copiar y distribuir
+        indices = np.linspace(0, num_frames - 1, target_count)
+        adjusted_frames = [frames[int(i)] for i in indices]
+        
+        # Interpolación de frames para asegurar el tamaño correcto
+        adjusted_frames = [np.interp(np.linspace(0, num_frames - 1, target_count), 
+                                    np.arange(num_frames), frame) for frame in np.array(adjusted_frames).T]
+        adjusted_frames = np.array(adjusted_frames).T.tolist()
+    else:
+        # Si ya tenemos el número correcto de frames, no hacer nada
+        adjusted_frames = frames
+
+    return adjusted_frames
+
+
 def read_frames_from_directory(directory):
     frames = []
     for filename in sorted(os.listdir(directory)):
@@ -44,7 +77,7 @@ def process_directory(word_directory, target_frame_count=15):
         sample_directory = os.path.join(word_directory, sample_name)
         if os.path.isdir(sample_directory):
             frames = read_frames_from_directory(sample_directory)
-            normalized_frames = normalize_frames(frames, target_frame_count)
+            normalized_frames = adjust_frames(frames, target_frame_count)
             clear_directory(sample_directory)
             save_normalized_frames(sample_directory, normalized_frames)
 
