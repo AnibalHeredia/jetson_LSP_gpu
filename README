@@ -25,3 +25,15 @@ sudo apt-get install qtcreator pyqt5-dev-tools
 sudo apt-get install python3-pyqt5
 sudo apt-get install qttools5-dev-tools
 
+
+pip install --upgrade sip
+sudo apt-get install build-essential libgl1-mesa-dev
+sudo apt-get install qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
+pip cache purge
+pip install PyQt5==5.14.1
+
+Successfully built pyqt5 PyQt5-sip
+Installing collected packages: PyQt5-sip, pyqt5
+Successfully installed PyQt5-sip-12.15.0 pyqt5-5.14.1
+ Downloading PyQt5_sip-12.15.0.tar.gz (104 kB)
+ Created wheel for pyqt5: filename=PyQt5-5.14.1-cp35.cp36.cp37.cp38.cp39-abi3-manylinux2014_aarch64.whl
