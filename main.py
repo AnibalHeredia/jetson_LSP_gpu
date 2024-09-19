@@ -7,7 +7,6 @@ from PyQt5.uic import loadUi
 
 import numpy as np
 from keras.models import load_model
-from mediapipe.python.solutions.holistic import Holistic
 from constants import *
 from func import *
 
