@@ -3,16 +3,6 @@ from keras.models import load_model
 from func import *
 from constants import *
 #from tensorflow.keras.preprocessing.sequence import pad_sequences
-
-def normalize_keypoints(keypoints, target_keypoints=15):
-    num_keypoints = len(keypoints)
-    if  num_keypoints != target_keypoints:
-        indices = np.linspace(0, num_keypoints - 1, target_keypoints, dtype=int)
-        adjusted_keypoints = [keypoints[int(i)] for i in indices]
-    else:
-        adjusted_keypoints = keypoints
-
-    return adjusted_keypoints
     
 def evaluate_model(src=None, threshold=0.8, margin_frame=1, delay_frames=3):
     kp_seq, sentence = [], []

@@ -20,7 +20,7 @@ if platform.system() == 'Linux':
 elif platform.system() == 'Windows':
     print("init Windows")
     delegate = python.BaseOptions.Delegate.CPU
-    video_source = 0
+    video_source = 1
 else:
     raise Exception("Sistema operativo no soportado")
 
@@ -116,6 +116,16 @@ def extract_keypoints(pose_results, hands_results):
         return np.zeros(258)
     else:
         return keypoints
+
+def normalize_keypoints(keypoints, target_keypoints=15):
+    num_keypoints = len(keypoints)
+    if  num_keypoints != target_keypoints:
+        indices = np.linspace(0, num_keypoints - 1, target_keypoints, dtype=int)
+        adjusted_keypoints = [keypoints[int(i)] for i in indices]
+    else:
+        adjusted_keypoints = keypoints
+
+    return adjusted_keypoints
 
 # MODEL
 base_options_pose = python.BaseOptions(model_asset_path=pose_model_path, delegate=delegate)
