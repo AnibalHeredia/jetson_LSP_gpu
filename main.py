@@ -2,18 +2,11 @@ import sys
 from keras.models import load_model
 from constants import *
 from func import *
-
+import socket
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtCore import QTimer, Qt
 from PyQt5.uic import loadUi
-
-import numpy as np
-from keras.models import load_model
-from constants import *
-from func import *
-import socket
-
 
 class VideoRecorder(QMainWindow):
     def __init__(self):
