@@ -9,6 +9,7 @@ import numpy as np
 from keras.models import load_model
 from constants import *
 from func import *
+import socket
 
 
 class VideoRecorder(QMainWindow):
@@ -16,15 +17,19 @@ class VideoRecorder(QMainWindow):
         super().__init__()
         loadUi('mainwindow.ui', self)
         
+        self.get_ip()
+        
         self.capture = cv2.VideoCapture(video_source)
         self.init_lsp()
-        
-        # self.btn_start.clicked.connect(self.start_recording)
-        # self.btn_stop.clicked.connect(self.stop_recording)
         
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_frame)
         self.timer.start(30)  # Update frame every 30ms
+    
+    def get_ip(self):
+        hostname = socket.gethostname()
+        ip_local = socket.gethostbyname(hostname)
+        self.lbl_ip.setText("IP: " + ip_local)
     
     def init_lsp(self):
         self.pose_model = vision.PoseLandmarker.create_from_options(pose_options)
@@ -85,29 +90,16 @@ class VideoRecorder(QMainWindow):
         
         self.lbl_video.setPixmap(QPixmap.fromImage(scaled_qImg))
 
-    # def start_recording(self):
-    #     if not self.recording:
-    #         self.recording = True
-    #         # self.video_writer = cv2.VideoWriter("output.mp4", cv2.VideoWriter_fourcc(*'mp4v'), 30, (640, 480))
-    #         self.btn_start.setEnabled(False)
-    #         self.btn_stop.setEnabled(True)
-    
-    # def stop_recording(self):
-    #     if self.recording:
-    #         self.recording = False
-    #         # self.video_writer.release()
-    #         self.btn_start.setEnabled(True)
-    #         self.btn_stop.setEnabled(False)
-    
     def closeEvent(self, event):
         self.capture.release()
         # if self.is_recording:
             # self.video_writer.release()
         event.accept()
 
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = VideoRecorder()
-    #window.show()
     window.showFullScreen()
+    # window.show()
     sys.exit(app.exec_())

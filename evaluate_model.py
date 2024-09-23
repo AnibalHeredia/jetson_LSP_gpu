@@ -4,7 +4,7 @@ from func import *
 from constants import *
 #from tensorflow.keras.preprocessing.sequence import pad_sequences
     
-def evaluate_model(src=None, threshold=0.8, margin_frame=1, delay_frames=3):
+def evaluate_model(src=None, threshold=0.0, margin_frame=1, delay_frames=3):
     kp_seq, sentence = [], []
     word_ids = get_word_ids(WORDS_JSON_PATH)
     model = load_model(MODEL_PATH)
@@ -14,11 +14,11 @@ def evaluate_model(src=None, threshold=0.8, margin_frame=1, delay_frames=3):
     
     with vision.PoseLandmarker.create_from_options(pose_options) as pose_model, \
         vision.HandLandmarker.create_from_options(hand_options) as hand_model:
-        video = cv2.VideoCapture(video_source)
+        video = cv2.VideoCapture(src or video_source)
         
         while video.isOpened():
             ret, frame = video.read()
-            frame = cv2.flip(frame,1)
+            frame = cv2.flip(frame, 1)
             window_name ='Traductor LSP'
             #cv2.namedWindow(window_name, cv2.WINDOW_GUI_EXPANDED)
             #cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
