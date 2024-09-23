@@ -1,5 +1,8 @@
 import sys
-import cv2
+from keras.models import load_model
+from constants import *
+from func import *
+
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtCore import QTimer, Qt
