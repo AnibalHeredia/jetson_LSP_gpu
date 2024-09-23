@@ -20,7 +20,7 @@ if platform.system() == 'Linux':
 elif platform.system() == 'Windows':
     print("init Windows")
     delegate = python.BaseOptions.Delegate.CPU
-    video_source = 0
+    video_source = 1
 else:
     raise Exception("Sistema operativo no soportado")
 

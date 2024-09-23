@@ -1,10 +1,9 @@
-import cv2
 from keras.models import load_model
 from func import *
 from constants import *
-#from tensorflow.keras.preprocessing.sequence import pad_sequences
-    
-def evaluate_model(src=None, threshold=0.0, margin_frame=1, delay_frames=3):
+
+
+def evaluate_model(src=None, threshold=0.7, margin_frame=1, delay_frames=3):
     kp_seq, sentence = [], []
     word_ids = get_word_ids(WORDS_JSON_PATH)
     model = load_model(MODEL_PATH)
@@ -20,10 +19,10 @@ def evaluate_model(src=None, threshold=0.0, margin_frame=1, delay_frames=3):
             ret, frame = video.read()
             frame = cv2.flip(frame, 1)
             window_name ='Traductor LSP'
-            #cv2.namedWindow(window_name, cv2.WINDOW_GUI_EXPANDED)
-            #cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+            # cv2.namedWindow(window_name, cv2.WINDOW_GUI_EXPANDED)
+            # cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
             if not ret: 
-                print("Image capture failed.")
+                print("Image capture failed.", flush=True)
                 break
 
             pose_result, hand_result = mediapipe_detection(frame, pose_model, hand_model)
@@ -47,10 +46,9 @@ def evaluate_model(src=None, threshold=0.0, margin_frame=1, delay_frames=3):
                     kp_normalized = normalize_keypoints(kp_seq, int(MODEL_FRAMES))
                     res = model.predict(np.expand_dims(kp_normalized, axis=0))[0]
                     
-                    print(np.argmax(res), f"({res[np.argmax(res)] * 100:.2f}%)")
+                    print(np.argmax(res), f"({res[np.argmax(res)] * 100:.2f}%)", flush=True)
                     if res[np.argmax(res)] > threshold:
                         word_id = word_ids[np.argmax(res)].split('-')[0]
-                        
                         sent = words_text.get(word_id)
                         sentence.insert(0, sent)
                 
