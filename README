@@ -24,4 +24,5 @@ export LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libgomp.so.1
 sudo apt-get install qtcreator pyqt5-dev-tools
 sudo apt-get install python3-pyqt5
 sudo apt-get install qttools5-dev-tools
+qt6-tools designer
 
