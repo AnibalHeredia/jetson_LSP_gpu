@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1084</width>
+    <width>1007</width>
     <height>599</height>
    </rect>
   </property>
@@ -120,13 +120,22 @@ QPushButton:disabled {
     </item>
     <item>
      <widget class="QLabel" name="lbl_output">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="font">
        <font>
         <pointsize>36</pointsize>
        </font>
       </property>
       <property name="text">
-       <string/>
+       <string>sdfsd sdf sdf sd sd fsdf sdf sdfs dfsd fsdf sdf sdsdfsd sdf sdf sd sd fsdf sdf sdfs dfsd fsdf sdf sdsdfsd sdf sdf sd sd fsdf sdf sdfs dfsd fsdf sdf sdsdfsd sdf sdf sd sd fsdf sdf sdfs dfsd fsdf sdf sd</string>
+      </property>
+      <property name="wordWrap">
+       <bool>false</bool>
       </property>
      </widget>
     </item>
