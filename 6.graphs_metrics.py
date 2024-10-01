@@ -88,6 +88,8 @@ def metrics(data_path):
     f1 = f1_score(y_test, y_pred, average='weighted')
     print("F1-Score:", f1)
 
+    #https://medium.com/@maxgrossman10/accuracy-recall-precision-f1-score-with-python-4f2ee97e0d6
+    
 if __name__ == "__main__":
     metrics(METRICS_PATH)
     
