@@ -1,6 +1,5 @@
 from keras.models import Sequential
-from keras.layers import LSTM, Dense, Dropout
-from keras.regularizers import l2
+from keras.layers import LSTM, Dense
 from constants import LENGTH_KEYPOINTS, MODEL_FRAMES
 
 def get_model(max_length_frames, output_length: int):
