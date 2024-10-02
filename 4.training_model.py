@@ -8,7 +8,6 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.callbacks import EarlyStopping
 from keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, classification_report
 from func import get_word_ids, get_sequences_and_labels
 from constants import *
