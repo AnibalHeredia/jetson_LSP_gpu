@@ -2,34 +2,19 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-import pickle
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-from keras.models import load_model
-from keras.utils import to_categorical
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, classification_report
-from func import get_word_ids, get_sequences_and_labels
+from func import get_word_ids
 from constants import *
 
 def metrics(data_path):
-    # Cargar el history
-    with open('history.pkl', 'rb') as file:
-        history = pickle.load(file)
-   
-    model = load_model(MODEL_PATH)
 
-    word_ids = get_word_ids(WORDS_JSON_PATH) # ['word1', 'word2', 'word3]
-    sequences, labels = get_sequences_and_labels(word_ids)
-    sequences = pad_sequences(sequences, maxlen=int(MODEL_FRAMES), padding='pre', truncating='post', dtype='float16')
-    x = np.array(sequences)
-    y = to_categorical(labels).astype(int) 
-    x_train, x_val, y_train, y_val = train_test_split(x, y, test_size=0.05, random_state=42)
+    history_data = np.load('models/history.npy', allow_pickle=True).item()
 
-    # Get training and validation metrics
-    train_loss = history.history['loss']
-    val_loss = history.history['val_loss']
-    train_acc = history.history['accuracy']
-    val_acc = history.history['val_accuracy']
+    # Extraer las métricas
+    train_loss = history_data['loss']
+    val_loss = history_data['val_loss']
+    train_acc = history_data['accuracy']
+    val_acc = history_data['val_accuracy']
 
     # Create loss metrics graphs
     plt.plot(train_loss, label='Training loss')
@@ -47,27 +32,25 @@ def metrics(data_path):
     plt.legend()
     plt.show()
 
-    # Calculate predictions
-    y_pred = model.predict(x_val)
-    y_pred = np.argmax(y_pred, axis=1)
-    y_test = np.argmax(y_val, axis=1)
-
-    # Create confusion matrix
-    cm = confusion_matrix(y_test, y_pred)
-    print("Confusion Matrix:")
-    print(cm)
-
-    # Create a DataFrame for the confusion matrix
+    word_ids = get_word_ids(WORDS_JSON_PATH)
+    cm = np.load('models/confusion_matrix.npy')
     cm_df = pd.DataFrame(cm, index=word_ids, columns=word_ids)
 
     # Plot the confusion matrix
-    plt.figure(figsize=(10, 7))
+    plt.figure(figsize=(5, 5))
     sns.heatmap(cm_df, annot=True, cmap="Blues")
+    plt.xticks(rotation=45) 
+    plt.xlabel("Predicted Label", labelpad=20, loc='center')
+    plt.ylabel("True Label", labelpad=20)
     plt.title("Confusion Matrix")
-    plt.xlabel("Predicted Label")
-    plt.ylabel("True Label")
     plt.show()
 
+    # Calculate precision, recall, and F1-score
+    report_df = pd.read_csv('models/classification_report.csv')
+    print("Classification Report:")
+    print(report_df)
+    
+'''
     # Calculate precision, recall, and F1-score
     report = classification_report(y_test, y_pred, target_names=word_ids)
     print("Classification Report:")
@@ -89,7 +72,8 @@ def metrics(data_path):
     print("F1-Score:", f1)
 
     #https://medium.com/@maxgrossman10/accuracy-recall-precision-f1-score-with-python-4f2ee97e0d6
-    
+    '''
+
 if __name__ == "__main__":
     metrics(METRICS_PATH)
     
