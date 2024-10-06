@@ -51,15 +51,11 @@ def metrics(data_path):
     print(report_df)
     
 '''
-    # Calculate precision, recall, and F1-score
-    report = classification_report(y_test, y_pred, target_names=word_ids)
-    print("Classification Report:")
-    print(report)
-
     # Calculate accuracy
     accuracy = accuracy_score(y_test, y_pred)
     print("Accuracy:", accuracy)
 
+    # Calculate precision,
     precision = precision_score(y_test, y_pred, average='weighted')
     print("Precision:", precision)
 
