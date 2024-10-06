@@ -32,11 +32,10 @@ class VideoRecorder(QMainWindow):
         self.hand_model = vision.HandLandmarker.create_from_options(hand_options)
         self.kp_seq, self.sentence = [], []
         self.count_frame = 0
-        self.fix_frames = 0
-        self.margin_frame = 1
-        self.delay_frames = 3
+        self.margin_frame = 2
+        self.delete_frames = 3
+        self.threshold = 0.8
         self.model = load_model(MODEL_PATH)
-        self.recording = False
     
     def update_frame(self):
         word_ids = get_word_ids(WORDS_JSON_PATH)
@@ -48,30 +47,22 @@ class VideoRecorder(QMainWindow):
         
         pose_result, hand_result = mediapipe_detection(frame, self.pose_model, self.hand_model)
         
-        if there_hand(hand_result) or self.recording:
-            self.recording = False
+        if there_hand(hand_result):
             self.count_frame += 1
             if self.count_frame > self.margin_frame:
                 self.kp_seq.append(extract_keypoints(pose_result, hand_result))
             
         else:
             if self.count_frame >= MIN_LENGTH_FRAMES + self.margin_frame:
-                self.fix_frames += 1
-                if self.fix_frames < self.delay_frames:
-                    self.recording = True
-                    return
-                
-                self.kp_seq = self.kp_seq[: - (self.margin_frame + self.delay_frames)]
+                self.kp_seq = self.kp_seq[:-self.delete_frames]
                 kp_normalized = normalize_keypoints(self.kp_seq, int(MODEL_FRAMES))
                 res = self.model.predict(np.expand_dims(kp_normalized, axis=0))[0]
                 
-                if res[np.argmax(res)] > 0.7:
+                if res[np.argmax(res)] > self.threshold:
                     word_id = word_ids[np.argmax(res)].split('-')[0]
                     sent = words_text.get(word_id)
                     self.sentence.insert(0, sent)
-            
-            self.recording = False
-            self.fix_frames = 0
+
             self.count_frame = 0
             self.kp_seq = []
         

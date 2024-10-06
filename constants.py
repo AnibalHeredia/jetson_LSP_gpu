@@ -27,6 +27,7 @@ MODEL_PATH = os.path.join(MODEL_FOLDER_PATH, f"actions_{MODEL_FRAMES}.keras")
 METRICS_PATH = os.path.join(MODEL_FOLDER_PATH, f"history.pkl")
 KEYPOINTS_PATH = os.path.join(DATA_PATH, "keypoints")
 WORDS_JSON_PATH = os.path.join(MODEL_FOLDER_PATH, "words.json")
+EVALUATE_PATH =os.path.join(ROOT_PATH, "test")
 
 # SHOW IMAGE PARAMETERS
 FONT = cv2.FONT_HERSHEY_PLAIN

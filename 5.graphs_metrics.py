@@ -13,8 +13,8 @@ def metrics(data_path):
     # Extraer las métricas
     train_loss = history_data['loss']
     val_loss = history_data['val_loss']
-    train_acc = history_data['accuracy']
-    val_acc = history_data['val_accuracy']
+    train_acc = history_data['categorical_accuracy']
+    val_acc = history_data['val_categorical_accuracy']
 
     # Create loss metrics graphs
     plt.plot(train_loss, label='Training loss')
@@ -37,7 +37,7 @@ def metrics(data_path):
     cm_df = pd.DataFrame(cm, index=word_ids, columns=word_ids)
 
     # Plot the confusion matrix
-    plt.figure(figsize=(5, 5))
+    plt.figure(figsize=(10, 7))
     sns.heatmap(cm_df, annot=True, cmap="Blues")
     plt.xticks(rotation=45) 
     plt.xlabel("Predicted Label", labelpad=20, loc='center')

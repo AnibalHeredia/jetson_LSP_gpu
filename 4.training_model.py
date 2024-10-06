@@ -5,14 +5,14 @@ import seaborn as sns
 import pickle
 from model import get_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, classification_report
 from func import get_word_ids, get_sequences_and_labels
 from constants import *
 
-def training_model(model_path, epochs=500):
+def training_model(model_path, epochs=100):
     word_ids = get_word_ids(WORDS_JSON_PATH) # ['word1', 'word2', 'word3]
     
     sequences, labels = get_sequences_and_labels(word_ids)
@@ -22,11 +22,12 @@ def training_model(model_path, epochs=500):
     x = np.array(sequences)
     y = to_categorical(labels).astype(int) 
     
-    early_stopping = EarlyStopping(monitor='accuracy', patience=20, restore_best_weights=True)
+    #early_stopping = EarlyStopping(monitor='accuracy', patience=20, restore_best_weights=True)
+    checkpoint = ModelCheckpoint(model_path, monitor='val_loss', save_best_only=True, mode='min', verbose=1)
     x_train, x_val, y_train, y_val = train_test_split(x, y, test_size=0.05, random_state=42)
     
     model = get_model(int(MODEL_FRAMES), len(word_ids))
-    history = model.fit(x_train, y_train, validation_data=(x_val, y_val), epochs=epochs, batch_size=8, callbacks=[early_stopping])
+    history = model.fit(x_train, y_train, validation_data=(x_val, y_val), epochs=epochs, batch_size=8, callbacks=[checkpoint])
     
     history_data = {key: np.array(value) for key, value in history.history.items()}
     np.save('models/history.npy', history_data)
@@ -34,8 +35,8 @@ def training_model(model_path, epochs=500):
     # Get training and validation metrics
     train_loss = history.history['loss']
     val_loss = history.history['val_loss']
-    train_acc = history.history['accuracy']
-    val_acc = history.history['val_accuracy']
+    train_acc = history.history['categorical_accuracy']
+    val_acc = history.history['val_categorical_accuracy']
 
    # Create loss metrics graphs
     plt.plot(train_loss, label='Training loss')
@@ -68,11 +69,12 @@ def training_model(model_path, epochs=500):
     np.save('models/confusion_matrix.npy', cm_df.to_numpy())
 
     # Plot the confusion matrix
-    plt.figure(figsize=(5, 5))
+    plt.figure(figsize=(10, 7))
     sns.heatmap(cm_df, annot=True, cmap="Blues")
+    plt.xticks(rotation=45) 
+    plt.xlabel("Predicted Label", labelpad=20, loc='center')
+    plt.ylabel("True Label", labelpad=20)
     plt.title("Confusion Matrix")
-    plt.xlabel("Predicted Label")
-    plt.ylabel("True Label")
     plt.show()
 
     # Calculate precision, recall, and F1-score
@@ -83,7 +85,7 @@ def training_model(model_path, epochs=500):
     print(report)
 
     model.summary()
-    model.save(model_path)
+    #model.save(model_path)
 
 if __name__ == "__main__":
     training_model(MODEL_PATH)
