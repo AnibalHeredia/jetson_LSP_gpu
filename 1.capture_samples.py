@@ -26,7 +26,7 @@ def get_next_sample_number(path):
             break
     return next_sample_number
 
-def capture_samples(path, margin_frame=2, min_cant_frames=5, delay_frames=3):
+def capture_samples(path, margin_frame=2, min_cant_frames=5, delete_frames=3):
     '''
     ### CAPTURA DE MUESTRAS PARA UNA PALABRA
     Recibe como parámetro la ubicación de guardado y guarda los frames
@@ -41,7 +41,6 @@ def capture_samples(path, margin_frame=2, min_cant_frames=5, delay_frames=3):
     count_frame = 0
     frames = []
     fix_frames = 0
-    recording = False
     
     with vision.PoseLandmarker.create_from_options(pose_options) as pose_model, \
         vision.HandLandmarker.create_from_options(hand_options) as hand_model:
@@ -57,32 +56,25 @@ def capture_samples(path, margin_frame=2, min_cant_frames=5, delay_frames=3):
             image = frame.copy()
             pose_result, hand_result = mediapipe_detection(frame, pose_model, hand_model)
             
-            if there_hand(hand_result) or recording:
-                recording = False
+            if there_hand(hand_result):
                 count_frame += 1
                 if count_frame > margin_frame:
                     cv2.putText(image, 'Capturando...', FONT_POS, FONT, FONT_SIZE, (255, 50, 0))
                     frames.append(np.asarray(frame))
             else:
                 if len(frames) > min_cant_frames + margin_frame:
-                    fix_frames += 1
-                    if fix_frames < delay_frames:
-                        recording = True
-                        continue
-                    frames = frames[: - (margin_frame + delay_frames)]
-                    #today = datetime.now().strftime('%y%m%d%H%M%S%f')
-                    #output_folder = os.path.join(path, f"sample_{today}")
+                    frames = frames[:-delete_frames]
                     next_sample_number = get_next_sample_number(path)
                     output_folder = os.path.join(path, f"sample{str(next_sample_number).zfill(2)}")
                     create_folder(output_folder)
                     save_frames(frames, output_folder)
-                
-                recording, fix_frames = False, 0
+                    print(f"sample{str(next_sample_number).zfill(2)}")
+
                 frames, count_frame = [], 0
                 cv2.putText(image, 'Listo para capturar...', FONT_POS, FONT, FONT_SIZE, (0,220, 100))
             
             annotated_image = draw_landmarks_on_image(image, pose_result, hand_result)
-            cv2.imshow(f'Toma de muestras para "{os.path.basename(path)}"', annotated_image)
+            cv2.imshow(f'Toma de muestras para "{os.path.basename(path)}', annotated_image)
             if cv2.waitKey(10) & 0xFF == ord('q'):
                 break
 
@@ -90,6 +82,7 @@ def capture_samples(path, margin_frame=2, min_cant_frames=5, delay_frames=3):
         cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    word_name = "gracias"
+    word_name = "hola"
+    print(word_name)
     word_path = os.path.join(ROOT_PATH, FRAME_ACTIONS_PATH, word_name)
     capture_samples(word_path)

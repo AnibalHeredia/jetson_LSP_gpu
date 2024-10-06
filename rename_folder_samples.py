@@ -24,6 +24,8 @@ def rename_folders(path):
         print(f"Renamed '{old_folder_path}' to '{new_folder_path}'")
 
 if __name__ == "__main__":
+    rename_folders("C:/Users/ENOS/Desktop/jetson_LSP_gpu/frame_actions/hola")
+    '''
     word_ids = [word for word in os.listdir(os.path.join(ROOT_PATH, FRAME_ACTIONS_PATH))]
     
     for word_id in word_ids:
@@ -31,5 +33,5 @@ if __name__ == "__main__":
         if os.path.isdir(word_path):
             print(f'Renombrando para "{word_id}"...')
             rename_folders(word_path)
-    
+    '''
 

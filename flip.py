@@ -42,7 +42,8 @@ def flip_images_in_directory(input_directory):
 
 if __name__ == "__main__":
     word_ids = [word for word in os.listdir(os.path.join(ROOT_PATH, FRAME_ACTIONS_PATH))]
-
+    #flip_images_in_directory("C:/Users/ENOS/Desktop/frame/hola")
+    #print(f'Normalizando frames para hola')
     for word_id in word_ids:
         word_path = os.path.join(FRAME_ACTIONS_PATH, word_id)
         if os.path.isdir(word_path):
