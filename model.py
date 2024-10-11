@@ -2,7 +2,7 @@ from keras.models import Sequential
 from keras.layers import LSTM, Dense
 from constants import LENGTH_KEYPOINTS, MODEL_FRAMES
 
-def get_model(max_length_frames, output_length: int):
+def get_model(output_length: int):
     model = Sequential()
     
     model.add(LSTM(64, return_sequences=True, activation='relu',input_shape=(MODEL_FRAMES, LENGTH_KEYPOINTS)))

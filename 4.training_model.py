@@ -12,7 +12,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 from func import get_word_ids, get_sequences_and_labels
 from constants import *
 
-def training_model(model_path, epochs=100):
+def training_model(model_path, epochs=500):
     word_ids = get_word_ids(WORDS_JSON_PATH) # ['word1', 'word2', 'word3]
     
     sequences, labels = get_sequences_and_labels(word_ids)
@@ -22,12 +22,12 @@ def training_model(model_path, epochs=100):
     x = np.array(sequences)
     y = to_categorical(labels).astype(int) 
     
-    #early_stopping = EarlyStopping(monitor='accuracy', patience=20, restore_best_weights=True)
-    checkpoint = ModelCheckpoint(model_path, monitor='val_loss', save_best_only=True, mode='min', verbose=1)
+    early_stopping = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True)
+    #checkpoint = ModelCheckpoint(model_path, monitor='val_loss', save_best_only=True, mode='min', verbose=1)
     x_train, x_val, y_train, y_val = train_test_split(x, y, test_size=0.05, random_state=42)
     
-    model = get_model(int(MODEL_FRAMES), len(word_ids))
-    history = model.fit(x_train, y_train, validation_data=(x_val, y_val), epochs=epochs, batch_size=8, callbacks=[checkpoint])
+    model = get_model(len(word_ids))
+    history = model.fit(x_train, y_train, validation_data=(x_val, y_val), epochs=epochs, batch_size=8, callbacks=[early_stopping])
     
     history_data = {key: np.array(value) for key, value in history.history.items()}
     np.save('models/history.npy', history_data)
@@ -85,7 +85,7 @@ def training_model(model_path, epochs=100):
     print(report)
 
     model.summary()
-    #model.save(model_path)
+    model.save(model_path)
 
 if __name__ == "__main__":
     training_model(MODEL_PATH)
