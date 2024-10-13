@@ -1,6 +1,7 @@
 import json
 import platform
-import cv2
+from collections import deque
+import cv2 as cv
 import numpy as np
 import mediapipe as mp
 from mediapipe.tasks import python
@@ -24,20 +25,25 @@ elif platform.system() == 'Windows':
 else:
     raise Exception("Sistema operativo no soportado")
 
-def set_fullscreen(window_name):
-    # Obtener el tamaño de la pantalla
-    screen_width = cv2.getWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN)
-    screen_height = cv2.getWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN)
-    
-    if screen_width == -1:
-        screen_width = 1920  # Ajusta al tamaño de pantalla deseado
-    if screen_height == -1:
-        screen_height = 1080  # Ajusta al tamaño de pantalla deseado
+class CvFpsCalc(object):
+    def __init__(self, buffer_len=1):
+        self._start_tick = cv.getTickCount()
+        self._freq = 1000.0 / cv.getTickFrequency()
+        self._difftimes = deque(maxlen=buffer_len)
 
-    # Configurar la ventana a pantalla completa
-    cv2.namedWindow(window_name, cv2.WND_PROP_FULLSCREEN)
-    cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-                          
+    def get(self):
+        current_tick = cv.getTickCount()
+        different_time = (current_tick - self._start_tick) * self._freq
+        self._start_tick = current_tick
+
+        self._difftimes.append(different_time)
+
+        fps = 1000.0 / (sum(self._difftimes) / len(self._difftimes))
+        fps_rounded = round(fps, 2)
+
+        return fps_rounded
+
+       
 # DRAW LANDMARKS
 def draw_landmarks_on_image(rgb_image, pose_result, hand_result):
     annotated_image = np.copy(rgb_image)

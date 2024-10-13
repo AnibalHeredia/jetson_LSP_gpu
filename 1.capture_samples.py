@@ -40,7 +40,6 @@ def capture_samples(path, margin_frame=2, min_cant_frames=5, delete_frames=3):
     
     count_frame = 0
     frames = []
-    fix_frames = 0
     
     with vision.PoseLandmarker.create_from_options(pose_options) as pose_model, \
         vision.HandLandmarker.create_from_options(hand_options) as hand_model:

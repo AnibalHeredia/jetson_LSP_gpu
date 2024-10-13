@@ -2,7 +2,6 @@ from keras.models import load_model
 from func import *
 from constants import *
 
-
 def evaluate_model(src=None, threshold=0.8, margin_frame=2, delete_frames=3):
     kp_seq, sentence = [], []
     word_ids = get_word_ids(WORDS_JSON_PATH)
@@ -14,6 +13,7 @@ def evaluate_model(src=None, threshold=0.8, margin_frame=2, delete_frames=3):
         video = cv2.VideoCapture(src or video_source)
         
         while video.isOpened():
+            display_fps = cvFpsCalc.get()
             ret, frame = video.read()
             frame = cv2.flip(frame, 1)
             window_name ='Traductor LSP'
@@ -21,7 +21,7 @@ def evaluate_model(src=None, threshold=0.8, margin_frame=2, delete_frames=3):
             if not ret: 
                 print("Image capture failed.", flush=True)
                 break
-
+            
             pose_result, hand_result = mediapipe_detection(frame, pose_model, hand_model)
             
             # TODO: colocar un máximo de frames para cada seña,
@@ -48,9 +48,11 @@ def evaluate_model(src=None, threshold=0.8, margin_frame=2, delete_frames=3):
                 kp_seq = []
             
             if not src:
+
                 cv2.rectangle(frame, (0, 0), (640, 35), (245, 117, 16), -1)
                 cv2.putText(frame, ' | '.join(sentence), FONT_POS, FONT, FONT_SIZE, (255, 255, 255))
                 annotated_image = draw_landmarks_on_image(frame, pose_result, hand_result)
+                cv2.putText(annotated_image, "FPS:" + str(display_fps), (10, 460),cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 0), 2, cv2.LINE_AA)
                 cv2.imshow(window_name, annotated_image)
                 if cv2.waitKey(10) & 0xFF == ord('q'):
                     break
@@ -60,6 +62,7 @@ def evaluate_model(src=None, threshold=0.8, margin_frame=2, delete_frames=3):
         return sentence
     
 if __name__ == "__main__":
+    cvFpsCalc = CvFpsCalc(buffer_len=10)
     evaluate_path = os.path.join(ROOT_PATH, EVALUATE_PATH)
     create_folder(evaluate_path)
     evaluate_model()
