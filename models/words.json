@@ -13,5 +13,21 @@
         "mas_o_menos",
         "me_ayudas",
         "por_favor"
+    ],
+    "word_ids_eng":[
+        "goodbye",
+        "well",
+        "good night",
+        "good afternoon",
+        "good morning",
+        "how are you?",
+        "sorry",
+        "thank you",
+        "hello",
+        "bad",
+        "so-so",
+        "help me",
+        "please"
     ]
+
 }

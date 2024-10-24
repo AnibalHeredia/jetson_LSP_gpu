@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-from func import get_word_ids
+from func import get_word_ids_eng
 from constants import *
 
 def metrics(data_path):
@@ -32,7 +32,7 @@ def metrics(data_path):
     plt.legend()
     plt.show()
 
-    word_ids = get_word_ids(WORDS_JSON_PATH)
+    word_ids = get_word_ids_eng(WORDS_JSON_PATH)
     cm = np.load('models/confusion_matrix.npy')
     cm_df = pd.DataFrame(cm, index=word_ids, columns=word_ids)
 

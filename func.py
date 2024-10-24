@@ -245,6 +245,11 @@ def get_word_ids(path):
     with open(path, 'r') as json_file:
         data = json.load(json_file)
         return data.get('word_ids')
+    
+def get_word_ids_eng(path):
+    with open(path, 'r') as json_file:
+        data = json.load(json_file)
+        return data.get('word_ids_eng')
 
 # TRAINING MODEL
 def get_sequences_and_labels(words_id):
